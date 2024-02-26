@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 
 from data import get_data, inspect_data, split_data
 
+
 data = get_data()
 inspect_data(data)
 
@@ -23,9 +24,28 @@ y_test = test_data['MPG'].to_numpy()
 x_test = test_data['Weight'].to_numpy()
 
 # TODO: calculate closed-form solution
-theta_best = [0, 0]
+def get_theta_best(x, y):
+    # 1.8: observation matrix = [1 ; 1 ; ... 1] + x
+    x = x.reshape(-1, 1)
+    ones = np.ones((len(x), 1))
+    obs = np.concatenate((ones, x), axis=1)
+    # o - observations
+    # 1.13: (o.T * o)^-1 * o.T * y
+    ind_vars = np.linalg.inv(obs.T.dot(obs)).dot(obs.T).dot(y)
+    return ind_vars
+
+
+theta_best = get_theta_best(x_train, y_train)
 
 # TODO: calculate error
+def MSE(x, y, theta):
+    # MSE = SUM (from i=1 to n) (actual_output - predicted_output) ** 2
+    error_sum = 0
+    for i in range(len(x)):
+        error_sum += ((theta[0] + theta[1] * x[i]) - y[i]) ** 2
+    return error_sum
+
+print("Error: ", MSE(x_test, y_test, theta_best))
 
 # plot the regression line
 x = np.linspace(min(x_test), max(x_test), 100)
@@ -37,6 +57,10 @@ plt.ylabel('MPG')
 plt.show()
 
 # TODO: standardization
+# z = (x-m)/q
+# x to pierwotna wartość zmiennej, µ to średnia z populacji, a σ to
+# odchylenie standardowe populacji
+
 
 # TODO: calculate theta using Batch Gradient Descent
 
