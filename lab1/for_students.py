@@ -25,7 +25,7 @@ def create_x_matrix(data):
     displacement = 1 / data['Displacement'].to_numpy()
     model_year = data['Model Year'].to_numpy()
     ones = np.ones_like(weight)
-    return np.c_[ones, weight, horsepower, model_year]
+    return np.c_[ones, weight]
 
 
 y_train = train_data['MPG'].to_numpy()
@@ -63,15 +63,17 @@ def get_mse(x_arr, y_arr, theta):
 
 print("MSE = ", get_mse(x_test, y_test, theta_best))
 
-x_test_weight = 1 / x_test[:, 1]
+x_test_weight = x_test[:, 1]
 # plot the regression line
 x = np.linspace(min(x_test_weight), max(x_test_weight), 100)
 y = float(theta_best[0]) + float(theta_best[1]) * x
+#y = 1 / y
 
-plt.plot(x, y)
-plt.scatter(x_test_weight, y_test)
+plt.plot(1/x, y)
+plt.scatter(1/x_test_weight, y_test)
 plt.xlabel('Weight')
 plt.ylabel('MPG')
+plt.title('Simple Linear Regression')
 plt.show()
 
 # TODO: standardization
@@ -111,8 +113,9 @@ y = float(theta_best[0]) + float(theta_best[1]) * x
 for i in range(1, params):
     mean = np.mean(x_train[:, i])
     std = np.std(x_train[:, i])
-    x = (x * std) + mean
     x_test[:, i] = (x_test[:, i] * std) + mean
+    if i == 1:
+        x = (x * std) + mean
 
 plt.plot(x, y)
 plt.scatter(x_test[:, 1], y_test)
