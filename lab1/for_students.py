@@ -78,11 +78,11 @@ plt.show()
 
 # TODO: standardization
 # 1.15: z = (x - mean) / std
+stand_params = dict()
 for i in range(1, params):
-    mean = np.mean(x_train[:, i])
-    std = np.std(x_train[:, i])
-    x_train[:, i] = (x_train[:, i] - mean) / std
-    x_test[:, i] = (x_test[:, i] - mean) / std
+    stand_params[i] = dict({'mean': np.mean(x_train[:, i]), 'std': np.std(x_train[:, i])})
+    x_train[:, i] = (x_train[:, i] - stand_params[i]['mean']) / stand_params[i]['std']
+    x_test[:, i] = (x_test[:, i] - stand_params[i]['mean']) / stand_params[i]['std']
 
 
 # TODO: calculate theta using Batch Gradient Descent
@@ -111,14 +111,28 @@ y = float(theta_best[0]) + float(theta_best[1]) * x
 
 # destandardization
 for i in range(1, params):
-    mean = np.mean(x_train[:, i])
-    std = np.std(x_train[:, i])
+    mean = stand_params[i]['mean']
+    std = stand_params[i]['std']
     x_test[:, i] = (x_test[:, i] * std) + mean
     if i == 1:
-        x = (x * std) + mean
+        x = x * std + mean
+
+plt.plot(1 / x, y)
+plt.scatter(1 / x_test[:, 1], y_test)
+plt.xlabel('Weight')
+plt.ylabel('MPG')
+plt.title('Gradient Descent')
+plt.show()
+
+"""
+x = x * x_std + x_mean
+x_test = x_test * x_std + x_mean
+x = 1/x
+x_test = 1/x_test
 
 plt.plot(x, y)
-plt.scatter(x_test[:, 1], y_test)
+plt.scatter(x_test, y_test)
 plt.xlabel('Weight')
 plt.ylabel('MPG')
 plt.show()
+"""
