@@ -34,8 +34,7 @@ print(items)
 population_size = 100
 generations = 200
 n_selection = 20
-# n_elite = 1
-n_elite = 10
+n_elite = 1
 
 start_time = time.time()
 best_solution = None
@@ -51,27 +50,21 @@ for _ in range(generations):
     probability_distribution = [fitness(items, knapsack_max_capacity, individual) / total_fitness for individual in population]
     selected = random.choices(population, weights=probability_distribution, k=n_selection)
 
-    # 2. Single-point crossover
+    # 2. Crossover
     new_population = []
     for _ in range(population_size - n_elite):
         parent1, parent2 = random.choices(selected, k=2)
         crossover_point = random.randint(1, len(items) - 1)
-        # children = parent1[:crossover_point] + parent2[crossover_point:]
-        # new_population.append(children)
-
-        child1 = parent1[:crossover_point] + parent2[crossover_point:]
-        child2 = parent2[:crossover_point] + parent1[crossover_point:]
-
-        new_population.extend([child1, child2])
+        children = parent1[:crossover_point] + parent2[crossover_point:]
+        new_population.append(children)
 
     # 3. Mutation
     for i in range(len(new_population)):
-        # j = random.randint(0, len(new_population[i]) - 1)
         for j in range(len(new_population[i])):
             if random.random() < 0.01:
                 new_population[i][j] = not new_population[i][j]
 
-    # 4. Elitism
+    # 4. Actualize with elites
     elite_population = sorted(population, key=lambda x: fitness(items, knapsack_max_capacity, x))[-n_elite:]
     new_population.extend(elite_population)
     population = new_population
